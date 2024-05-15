@@ -50,8 +50,13 @@ export default {
 
 <style scoped>
 .detail-card {
+  background-color: #ccc;
   border: 1px solid #ccc;
   padding: 10px;
   margin-top: 20px;
+  z-index: 100;
+  box-shadow: 0px 0px 15px -2px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  margin: 16px;
 }
 </style>

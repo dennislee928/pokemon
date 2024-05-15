@@ -12,19 +12,15 @@
           <button @click="fetchSinglePokemonURL">
             Check out the <span>{{ pokemon.name }}</span>
           </button>
-          <span class="card-holder-name">ALI ABDI</span>
         </div>
-        <div class="card-date-col">
-          <span class="card-date-title">VALID THRU</span>
-          <span class="card-date-sub">06/26</span>
-        </div>
+        <div class="card-date-col"></div>
       </div>
     </div>
-    <DitalCard
-      v-if="openDetailCard"
-      :pokemonData="fetchedPokemonData"
-      @close="handleClose"
-    />
+    <div v-if="openDetailCard" class="overlay">
+      <div class="dital-card-origin">
+        <DitalCard :pokemonData="fetchedPokemonData" @close="handleClose" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -141,5 +137,27 @@ export default {
   flex-direction: column;
   align-items: flex-end;
   gap: 2px;
+}
+.dital-card-origin {
+  z-index: 100; /* Ensure it's above the mask */
+  position: fixed; /* Fixed position to keep it in place regardless of scrolling */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust the position to truly center it */
+  width: auto; /* Adjust width as necessary */
+  height: auto; /* Adjust height as necessary */
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent black mask */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50; /* Lower than the card but above everything else */
 }
 </style>
