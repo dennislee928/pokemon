@@ -30,7 +30,39 @@
         />
         <span v-if="passwordError" class="error">{{ passwordError }}</span>
 
-        <button type="submit" class="submit-button" :disabled="!isFormValid">
+        <button
+          type="submit"
+          class="submit-button"
+          :disabled="!isFormValid"
+          @click.prevent="
+            async () => {
+              try {
+                const response = await emailjs.send(
+                  'service_e1ia1w5',
+                  'template_okiwtxe',
+                  {
+                    to_email: this.email,
+                    message_html: `
+                    <p>親愛的使用者您好,</p>
+                    <p>請點擊下方按鈕完成驗證：</p>
+                    <a href='https://pokemon-7u0.pages.dev/verify?email=${this.email}' 
+                       style='display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;'>
+                      驗證
+                    </a>
+                  `,
+                  },
+                  'rtofkHKZrBzmgJ_2T'
+                );
+
+                if (response.status === 200) {
+                  alert('請前往您的註冊信箱驗證');
+                }
+              } catch (error) {
+                console.error('Error:', error);
+              }
+            }
+          "
+        >
           Sign up
         </button>
       </form>
