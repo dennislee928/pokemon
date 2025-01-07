@@ -77,6 +77,14 @@ export default {
     this.fetchAllPokemon();
     this.loadTurnstile();
 
+    // 檢查是否是從驗證郵件返回
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has("verified")) {
+      alert("驗證成功！請登入");
+      // 清除 URL 參數
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     window.turnstileCallback = (token) => {
       console.log("Turnstile Callback Triggered:", token);
       this.turnstileVerified = true;
@@ -120,16 +128,24 @@ export default {
       document.head.appendChild(script);
     },
     async sendVerificationEmail() {
-      if (this.emailError || this.passwordError || !this.turnstileVerified)
-        return;
+      if (this.emailError || this.passwordError) return;
 
       try {
-        const verificationUrl = `https://pokemon-7u0.pages.dev/verify?email=${encodeURIComponent(
-          this.email
-        )}`;
+        const verificationUrl = `https://covid-19-data.p.rapidapi.com/country/code?format=json&code=it`;
         const emailContent = `
-          <p>請點擊以下按鈕完成註冊：</p>
-          <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none;">驗證電子郵件</a>
+          <p>親愛的使用者您好,</p>
+          <p>請點擊下方按鈕完成驗證：</p>
+          <button onclick="fetch('${verificationUrl}', {
+            method: 'GET',
+            headers: {
+              'X-RapidAPI-Key': 'YOUR_RAPID_API_KEY',
+              'X-RapidAPI-Host': 'covid-19-data.p.rapidapi.com'
+            }
+          }).then(() => {
+            window.location.href = 'https://pokemon-7u0.pages.dev/?verified=true';
+          })" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border: none; cursor: pointer;">
+            驗證
+          </button>
         `;
 
         const response = await emailjs.send(
@@ -144,8 +160,6 @@ export default {
 
         if (response.status === 200) {
           console.log("Verification email sent successfully.");
-          alert("驗證成功！請登入");
-          window.location.href = "https://pokemon-7u0.pages.dev/";
         } else {
           console.error("Failed to send verification email.");
         }
