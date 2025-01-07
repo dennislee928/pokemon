@@ -30,12 +30,7 @@
         />
         <span v-if="passwordError" class="error">{{ passwordError }}</span>
 
-        <button
-          type="submit"
-          value="Submit"
-          :disabled="emailError || passwordError"
-          class="submit-button"
-        >
+        <button type="submit" class="submit-button" :disabled="!isFormValid">
           Sign up
         </button>
       </form>
@@ -71,6 +66,13 @@ export default {
       turnstileVerified: false,
     };
   },
+  computed: {
+    isFormValid() {
+      return (
+        this.email && this.password && !this.emailError && !this.passwordError
+      );
+    },
+  },
   mounted() {
     this.fetchAllPokemon();
     this.loadTurnstile();
@@ -87,6 +89,7 @@ export default {
       this.emailError = emailPattern.test(this.email)
         ? ""
         : "Invalid email format";
+      console.log("Email valid:", !this.emailError);
     },
     validatePassword() {
       const passwordPattern =
@@ -94,6 +97,7 @@ export default {
       this.passwordError = passwordPattern.test(this.password)
         ? ""
         : "Password must be >8 characters, include uppercase, lowercase, number, and special character";
+      console.log("Password valid:", !this.passwordError);
     },
     async fetchAllPokemon() {
       try {
