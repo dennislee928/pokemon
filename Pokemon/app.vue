@@ -1,53 +1,54 @@
 <template>
   <div id="app">
-    <div
-      v-if="!turnstileVerified"
-      class="cf-turnstile"
-      data-sitekey="0x4AAAAAAA4w98rWzg6uqdQP"
-      data-callback="turnstileCallback"
-    ></div>
+    <div v-if="!turnstileVerified" class="cf-turnstile-container">
+      <div
+        class="cf-turnstile"
+        data-sitekey="0x4AAAAAAA4w98rWzg6uqdQP"
+        data-callback="turnstileCallback"
+      ></div>
+    </div>
 
-    <form
-      v-if="turnstileVerified"
-      @submit.prevent="sendVerificationEmail"
-      class="form-container"
-    >
-      <input
-        type="text"
-        v-model="email"
-        placeholder="Email"
-        required
-        @input="validateEmail"
-        class="input-field"
-      />
-      <span v-if="emailError" class="error">{{ emailError }}</span>
+    <div v-if="turnstileVerified">
+      <form @submit.prevent="sendVerificationEmail" class="form-container">
+        <input
+          type="text"
+          v-model="email"
+          placeholder="Email"
+          required
+          @input="validateEmail"
+          class="input-field"
+        />
+        <span v-if="emailError" class="error">{{ emailError }}</span>
 
-      <input
-        type="password"
-        v-model="password"
-        placeholder="Password"
-        required
-        @input="validatePassword"
-        class="input-field"
-      />
-      <span v-if="passwordError" class="error">{{ passwordError }}</span>
+        <input
+          type="password"
+          v-model="password"
+          placeholder="Password"
+          required
+          @input="validatePassword"
+          class="input-field"
+        />
+        <span v-if="passwordError" class="error">{{ passwordError }}</span>
 
-      <button
-        type="submit"
-        value="Submit"
-        :disabled="emailError || passwordError"
-        class="submit-button"
+        <button
+          type="submit"
+          value="Submit"
+          :disabled="emailError || passwordError"
+          class="submit-button"
+        >
+          Sign up
+        </button>
+      </form>
+
+      <div
+        v-for="pokemon in allPokemon"
+        :key="`${pokemon.name}-${pokemon.url}`"
       >
-        Sign up
-      </button>
-    </form>
-
-    <div
-      v-if="turnstileVerified"
-      v-for="pokemon in allPokemon"
-      :key="`${pokemon.name}-${pokemon.url}`"
-    >
-      <PokemonCard :pokemon="pokemon" @pokemon-details="updatePokemonDetails" />
+        <PokemonCard
+          :pokemon="pokemon"
+          @pokemon-details="updatePokemonDetails"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -194,5 +195,13 @@ export default {
   border: 1px solid #ccc;
   padding: 10px;
   margin-top: 10px;
+}
+
+.cf-turnstile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
 }
 </style>
