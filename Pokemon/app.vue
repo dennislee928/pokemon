@@ -1,14 +1,36 @@
 <template>
   <div id="app">
     <form @submit.prevent="sendVerificationEmail">
-      <input type="text" v-model="email" placeholder="email" required />
-      <input type="password" placeholder="password" required />
+      <input
+        type="text"
+        v-model="email"
+        placeholder="email"
+        required
+        @input="validateEmail"
+      />
+      <span v-if="emailError" class="error">{{ emailError }}</span>
+
+      <input
+        type="password"
+        v-model="password"
+        placeholder="password"
+        required
+        @input="validatePassword"
+      />
+      <span v-if="passwordError" class="error">{{ passwordError }}</span>
+
       <div
         class="cf-turnstile"
         data-sitekey="0x4AAAAAAA4w98rWzg6uqdQP"
         data-callback="turnstileCallback"
       ></div>
-      <button type="submit" value="Submit">Sign up</button>
+      <button
+        type="submit"
+        value="Submit"
+        :disabled="emailError || passwordError"
+      >
+        Sign up
+      </button>
     </form>
     <div v-for="pokemon in allPokemon" :key="`${pokemon.name}-${pokemon.url}`">
       <PokemonCard :pokemon="pokemon" @pokemon-details="updatePokemonDetails" />
@@ -26,8 +48,11 @@ export default {
   },
   data() {
     return {
-      allPokemon: [], // This will be filled with Pokémon data
-      email: "", // 新增 email 資料綁定
+      allPokemon: [],
+      email: "",
+      password: "",
+      emailError: "",
+      passwordError: "",
     };
   },
   mounted() {
@@ -35,6 +60,19 @@ export default {
     this.loadTurnstile();
   },
   methods: {
+    validateEmail() {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      this.emailError = emailPattern.test(this.email)
+        ? ""
+        : "Invalid email format";
+    },
+    validatePassword() {
+      const passwordPattern =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{9,}$/;
+      this.passwordError = passwordPattern.test(this.password)
+        ? ""
+        : "Password must be >8 characters, include uppercase, lowercase, number, and special character";
+    },
     async fetchAllPokemon() {
       try {
         const response = await fetch(
@@ -47,7 +85,6 @@ export default {
       }
     },
     updatePokemonDetails(data) {
-      // Update allPokemon with the details fetched
       this.allPokemon = data;
     },
     loadTurnstile() {
@@ -58,9 +95,10 @@ export default {
     },
     turnstileCallback(token) {
       console.log(`Challenge Success: ${token}`);
-      // 這裡可以加入驗證 token 的邏輯
     },
     async sendVerificationEmail() {
+      if (this.emailError || this.passwordError) return;
+
       try {
         const verificationUrl = `https://pokemon-7u0.pages.dev/verify?email=${encodeURIComponent(
           this.email
@@ -70,7 +108,6 @@ export default {
           <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none;">驗證電子郵件</a>
         `;
 
-        // 使用 email.js 發送郵件
         const response = await emailjs.send(
           "service_e1ia1w5",
           "template_okiwtxe",
@@ -93,8 +130,12 @@ export default {
   },
 };
 </script>
+
 <style>
-/* Ensure this is all valid CSS */
+.error {
+  color: red;
+  font-size: 0.9em;
+}
 .pokemon-card {
   border: 1px solid #ccc;
   padding: 10px;
