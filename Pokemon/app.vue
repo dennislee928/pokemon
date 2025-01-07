@@ -83,7 +83,7 @@ export default {
     // 檢查是否是驗證請求
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("email") && urlParams.has("token")) {
-      alert("email驗證成功！fetch註冊api");
+      alert("email驗證成功！這個時候才fetch註冊api");
       fetch(
         "https://covid-19-data.p.rapidapi.com/country/code?format=json&code=it",
         {
