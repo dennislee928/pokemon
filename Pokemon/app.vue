@@ -4,11 +4,11 @@
       <div
         class="cf-turnstile"
         data-sitekey="0x4AAAAAAA4w98rWzg6uqdQP"
-        :data-callback="turnstileCallback"
+        data-callback="turnstileCallback"
       ></div>
     </div>
 
-    <div v-if="turnstileVerified">
+    <div v-else>
       <form @submit.prevent="sendVerificationEmail" class="form-container">
         <input
           type="text"
@@ -74,9 +74,11 @@ export default {
   mounted() {
     this.fetchAllPokemon();
     this.loadTurnstile();
+
     window.turnstileCallback = (token) => {
-      console.log(`Challenge Success: ${token}`);
+      console.log("Turnstile Callback Triggered:", token);
       this.turnstileVerified = true;
+      console.log("Verification Status:", this.turnstileVerified);
     };
   },
   methods: {
@@ -109,14 +111,9 @@ export default {
     },
     loadTurnstile() {
       const script = document.createElement("script");
-      script.src =
-        "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback";
-      script.defer = true;
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+      script.async = true;
       document.head.appendChild(script);
-    },
-    turnstileCallback(token) {
-      console.log(`Challenge Success: ${token}`);
-      this.turnstileVerified = true;
     },
     async sendVerificationEmail() {
       if (this.emailError || this.passwordError || !this.turnstileVerified)
