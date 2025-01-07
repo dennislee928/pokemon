@@ -10,11 +10,6 @@
       ></div>
       <button type="submit" value="Submit">Sign up</button>
     </form>
-    <div
-      class="cf-turnstile"
-      data-sitekey="0x4AAAAAAA4w98rWzg6uqdQP"
-      data-callback="javascriptCallback"
-    ></div>
     <div v-for="pokemon in allPokemon" :key="`${pokemon.name}-${pokemon.url}`">
       <PokemonCard :pokemon="pokemon" @pokemon-details="updatePokemonDetails" />
     </div>
