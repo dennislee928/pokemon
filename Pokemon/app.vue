@@ -80,12 +80,28 @@ export default {
     this.fetchAllPokemon();
     this.loadTurnstile();
 
-    // 檢查是否是從驗證郵件返回
+    // 檢查是否是驗證請求
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has("verified")) {
-      alert("驗證成功！請登入");
-      // 清除 URL 參數
-      window.history.replaceState({}, document.title, window.location.pathname);
+    if (urlParams.has("email") && urlParams.has("token")) {
+      alert("email驗證成功！fetch註冊api");
+      fetch(
+        "https://covid-19-data.p.rapidapi.com/country/code?format=json&code=it",
+        {
+          method: "GET",
+          headers: {
+            "X-RapidAPI-Key": "YOUR_RAPID_API_KEY",
+            "X-RapidAPI-Host": "covid-19-data.p.rapidapi.com",
+          },
+        }
+      ).then(() => {
+        alert("驗證成功！請登入");
+        // 清除 URL 參數
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname
+        );
+      });
     }
 
     window.turnstileCallback = (token) => {
