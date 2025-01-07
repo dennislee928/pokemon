@@ -89,12 +89,13 @@ export default {
         {
           method: "GET",
           headers: {
-            "X-RapidAPI-Key": "YOUR_RAPID_API_KEY",
+            "X-RapidAPI-Key":
+              "6a3dbc5b0dmsh65f22b45a5928dbp1a69f1jsn62d8d50826d3",
             "X-RapidAPI-Host": "covid-19-data.p.rapidapi.com",
           },
         }
       ).then(() => {
-        alert("驗證成功！請登入");
+        alert("註冊成功！請登入");
         // 清除 URL 參數
         window.history.replaceState(
           {},
