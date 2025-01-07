@@ -22,8 +22,8 @@
 </template>
 
 <script>
+import emailjs from "emailjs-com";
 import PokemonCard from "./components/PokemonCard.vue";
-// import email.js or mailgun library here
 
 export default {
   components: {
@@ -67,8 +67,7 @@ export default {
     },
     async sendVerificationEmail() {
       try {
-        // 使用 email.js 或 Mailgun 發送驗證信
-        const verificationUrl = `https://yourdomain.com/verify?email=${encodeURIComponent(
+        const verificationUrl = `https://pokemon-7u0.pages.dev/verify?email=${encodeURIComponent(
           this.email
         )}`;
         const emailContent = `
@@ -76,25 +75,18 @@ export default {
           <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none;">驗證電子郵件</a>
         `;
 
-        // 假設使用 Mailgun
-        const response = await fetch(
-          "https://api.mailgun.net/v3/YOUR_DOMAIN_NAME/messages",
+        // 使用 email.js 發送郵件
+        const response = await emailjs.send(
+          "service_e1ia1w5",
+          "template_okiwtxe",
           {
-            method: "POST",
-            headers: {
-              Authorization: "Basic " + btoa("api:YOUR_API_KEY"),
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: new URLSearchParams({
-              from: "Excited User <mailgun@YOUR_DOMAIN_NAME>",
-              to: this.email,
-              subject: "請驗證您的電子郵件",
-              html: emailContent,
-            }),
-          }
+            to_email: this.email,
+            message_html: emailContent,
+          },
+          "YOUR_USER_ID"
         );
 
-        if (response.ok) {
+        if (response.status === 200) {
           console.log("Verification email sent successfully.");
         } else {
           console.error("Failed to send verification email.");
