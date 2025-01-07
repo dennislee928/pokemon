@@ -1,5 +1,15 @@
 <template>
   <div id="app">
+    <form action="/login" method="POST">
+      <input type="text" placeholder="username" />
+      <input type="password" placeholder="password" />
+      <div
+        class="cf-turnstile"
+        data-sitekey="0x4AAAAAAA4w98rWzg6uqdQP"
+        data-callback="turnstileCallback"
+      ></div>
+      <button type="submit" value="Submit">Log in</button>
+    </form>
     <div
       class="cf-turnstile"
       data-sitekey="0x4AAAAAAA4w98rWzg6uqdQP"
@@ -25,6 +35,7 @@ export default {
   },
   mounted() {
     this.fetchAllPokemon();
+    this.loadTurnstile();
   },
   methods: {
     async fetchAllPokemon() {
@@ -41,6 +52,16 @@ export default {
     updatePokemonDetails(data) {
       // Update allPokemon with the details fetched
       this.allPokemon = data;
+    },
+    loadTurnstile() {
+      const script = document.createElement("script");
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+      script.defer = true;
+      document.head.appendChild(script);
+    },
+    turnstileCallback(token) {
+      console.log(`Challenge Success: ${token}`);
+      // 這裡可以加入驗證 token 的邏輯
     },
   },
 };
