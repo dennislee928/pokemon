@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <div v-if="!turnstileVerified" class="cf-turnstile-container">
+    <div v-if="!turnstileVerified" class="turnstile-fullscreen">
       <div
         class="cf-turnstile"
         data-sitekey="0x4AAAAAAA4w98rWzg6uqdQP"
-        data-callback="turnstileCallback"
+        :data-callback="turnstileCallback"
       ></div>
     </div>
 
@@ -74,6 +74,10 @@ export default {
   mounted() {
     this.fetchAllPokemon();
     this.loadTurnstile();
+    window.turnstileCallback = (token) => {
+      console.log(`Challenge Success: ${token}`);
+      this.turnstileVerified = true;
+    };
   },
   methods: {
     validateEmail() {
@@ -105,7 +109,8 @@ export default {
     },
     loadTurnstile() {
       const script = document.createElement("script");
-      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+      script.src =
+        "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback";
       script.defer = true;
       document.head.appendChild(script);
     },
@@ -148,10 +153,26 @@ export default {
       }
     },
   },
+  beforeDestroy() {
+    delete window.turnstileCallback;
+  },
 };
 </script>
 
 <style>
+.turnstile-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  z-index: 1000;
+}
+
 .form-container {
   max-width: 400px;
   margin: 0 auto;
@@ -195,13 +216,5 @@ export default {
   border: 1px solid #ccc;
   padding: 10px;
   margin-top: 10px;
-}
-
-.cf-turnstile-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #f5f5f5;
 }
 </style>
