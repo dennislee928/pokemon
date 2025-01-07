@@ -1,6 +1,17 @@
 <template>
   <div id="app">
-    <form @submit.prevent="sendVerificationEmail" class="form-container">
+    <div
+      v-if="!turnstileVerified"
+      class="cf-turnstile"
+      data-sitekey="0x4AAAAAAA4w98rWzg6uqdQP"
+      data-callback="turnstileCallback"
+    ></div>
+
+    <form
+      v-if="turnstileVerified"
+      @submit.prevent="sendVerificationEmail"
+      class="form-container"
+    >
       <input
         type="text"
         v-model="email"
@@ -21,21 +32,16 @@
       />
       <span v-if="passwordError" class="error">{{ passwordError }}</span>
 
-      <div
-        v-if="!turnstileVerified"
-        class="cf-turnstile"
-        data-sitekey="0x4AAAAAAA4w98rWzg6uqdQP"
-        data-callback="turnstileCallback"
-      ></div>
       <button
         type="submit"
         value="Submit"
-        :disabled="emailError || passwordError || !turnstileVerified"
+        :disabled="emailError || passwordError"
         class="submit-button"
       >
         Sign up
       </button>
     </form>
+
     <div
       v-if="turnstileVerified"
       v-for="pokemon in allPokemon"
@@ -111,9 +117,12 @@ export default {
         return;
 
       try {
+        const verificationUrl = `https://pokemon-7u0.pages.dev/verify?email=${encodeURIComponent(
+          this.email
+        )}`;
         const emailContent = `
-          <p>完成驗證：</p>
-          <a href="https://your-api-endpoint.com/verify" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none;">驗證</a>
+          <p>請點擊以下按鈕完成註冊：</p>
+          <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none;">驗證電子郵件</a>
         `;
 
         const response = await emailjs.send(
@@ -135,32 +144,6 @@ export default {
         }
       } catch (error) {
         console.error("Error sending verification email:", error);
-      }
-    },
-    async verifyUser() {
-      try {
-        const response = await fetch(
-          "https://covid-19-data.p.rapidapi.com/country/code?format=json&code=it", //這裡我隨便用一隻api當demo
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: this.email,
-              password: this.password,
-            }),
-          }
-        );
-
-        if (response.ok) {
-          alert("驗證成功！請登入");
-          window.location.href = "https://pokemon-7u0.pages.dev/";
-        } else {
-          console.error("Verification failed.");
-        }
-      } catch (error) {
-        console.error("Error during verification:", error);
       }
     },
   },
