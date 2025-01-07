@@ -1,14 +1,14 @@
 <template>
   <div id="app">
-    <form action="/login" method="POST">
-      <input type="text" placeholder="username" />
-      <input type="password" placeholder="password" />
+    <form @submit.prevent="sendVerificationEmail">
+      <input type="text" v-model="email" placeholder="email" required />
+      <input type="password" placeholder="password" required />
       <div
         class="cf-turnstile"
         data-sitekey="0x4AAAAAAA4w98rWzg6uqdQP"
         data-callback="turnstileCallback"
       ></div>
-      <button type="submit" value="Submit">Log in</button>
+      <button type="submit" value="Submit">Sign up</button>
     </form>
     <div
       class="cf-turnstile"
@@ -23,6 +23,7 @@
 
 <script>
 import PokemonCard from "./components/PokemonCard.vue";
+// import email.js or mailgun library here
 
 export default {
   components: {
@@ -31,6 +32,7 @@ export default {
   data() {
     return {
       allPokemon: [], // This will be filled with Pokémon data
+      email: "", // 新增 email 資料綁定
     };
   },
   mounted() {
@@ -62,6 +64,44 @@ export default {
     turnstileCallback(token) {
       console.log(`Challenge Success: ${token}`);
       // 這裡可以加入驗證 token 的邏輯
+    },
+    async sendVerificationEmail() {
+      try {
+        // 使用 email.js 或 Mailgun 發送驗證信
+        const verificationUrl = `https://yourdomain.com/verify?email=${encodeURIComponent(
+          this.email
+        )}`;
+        const emailContent = `
+          <p>請點擊以下按鈕完成註冊：</p>
+          <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none;">驗證電子郵件</a>
+        `;
+
+        // 假設使用 Mailgun
+        const response = await fetch(
+          "https://api.mailgun.net/v3/YOUR_DOMAIN_NAME/messages",
+          {
+            method: "POST",
+            headers: {
+              Authorization: "Basic " + btoa("api:YOUR_API_KEY"),
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+              from: "Excited User <mailgun@YOUR_DOMAIN_NAME>",
+              to: this.email,
+              subject: "請驗證您的電子郵件",
+              html: emailContent,
+            }),
+          }
+        );
+
+        if (response.ok) {
+          console.log("Verification email sent successfully.");
+        } else {
+          console.error("Failed to send verification email.");
+        }
+      } catch (error) {
+        console.error("Error sending verification email:", error);
+      }
     },
   },
 };
