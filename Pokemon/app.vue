@@ -35,6 +35,8 @@
         </button>
       </form>
 
+      <div v-if="showPrompt" class="prompt-message">請前往您的email收信</div>
+
       <div
         v-for="pokemon in allPokemon"
         :key="`${pokemon.name}-${pokemon.url}`"
@@ -64,6 +66,7 @@ export default {
       emailError: "",
       passwordError: "",
       turnstileVerified: false,
+      showPrompt: false,
     };
   },
   computed: {
@@ -160,6 +163,10 @@ export default {
 
         if (response.status === 200) {
           console.log("Verification email sent successfully.");
+          this.showPrompt = true;
+          setTimeout(() => {
+            this.showPrompt = false;
+          }, 5000);
         } else {
           console.error("Failed to send verification email.");
         }
@@ -231,5 +238,34 @@ export default {
   border: 1px solid #ccc;
   padding: 10px;
   margin-top: 10px;
+}
+
+.prompt-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4caf50;
+  color: white;
+  padding: 15px 30px;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: fadeInOut 5s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 </style>
