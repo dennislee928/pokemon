@@ -1,25 +1,28 @@
 <template>
   <div id="app">
-    <form @submit.prevent="sendVerificationEmail">
+    <form @submit.prevent="sendVerificationEmail" class="form-container">
       <input
         type="text"
         v-model="email"
-        placeholder="email"
+        placeholder="Email"
         required
         @input="validateEmail"
+        class="input-field"
       />
       <span v-if="emailError" class="error">{{ emailError }}</span>
 
       <input
         type="password"
         v-model="password"
-        placeholder="password"
+        placeholder="Password"
         required
         @input="validatePassword"
+        class="input-field"
       />
       <span v-if="passwordError" class="error">{{ passwordError }}</span>
 
       <div
+        v-if="!turnstileVerified"
         class="cf-turnstile"
         data-sitekey="0x4AAAAAAA4w98rWzg6uqdQP"
         data-callback="turnstileCallback"
@@ -27,12 +30,17 @@
       <button
         type="submit"
         value="Submit"
-        :disabled="emailError || passwordError"
+        :disabled="emailError || passwordError || !turnstileVerified"
+        class="submit-button"
       >
         Sign up
       </button>
     </form>
-    <div v-for="pokemon in allPokemon" :key="`${pokemon.name}-${pokemon.url}`">
+    <div
+      v-if="turnstileVerified"
+      v-for="pokemon in allPokemon"
+      :key="`${pokemon.name}-${pokemon.url}`"
+    >
       <PokemonCard :pokemon="pokemon" @pokemon-details="updatePokemonDetails" />
     </div>
   </div>
@@ -53,6 +61,7 @@ export default {
       password: "",
       emailError: "",
       passwordError: "",
+      turnstileVerified: false,
     };
   },
   mounted() {
@@ -95,9 +104,11 @@ export default {
     },
     turnstileCallback(token) {
       console.log(`Challenge Success: ${token}`);
+      this.turnstileVerified = true;
     },
     async sendVerificationEmail() {
-      if (this.emailError || this.passwordError) return;
+      if (this.emailError || this.passwordError || !this.turnstileVerified)
+        return;
 
       try {
         const verificationUrl = `https://pokemon-7u0.pages.dev/verify?email=${encodeURIComponent(
@@ -132,12 +143,48 @@ export default {
 </script>
 
 <style>
+.form-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 .error {
   color: red;
   font-size: 0.9em;
+  margin-bottom: 10px;
+  display: block;
 }
+
 .pokemon-card {
   border: 1px solid #ccc;
   padding: 10px;
+  margin-top: 10px;
 }
 </style>
