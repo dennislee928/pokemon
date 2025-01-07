@@ -1,5 +1,10 @@
 <template>
   <div id="app">
+    <div
+      class="cf-turnstile"
+      data-sitekey="0x4AAAAAAA4w98rWzg6uqdQP"
+      data-callback="javascriptCallback"
+    ></div>
     <div v-for="pokemon in allPokemon" :key="`${pokemon.name}-${pokemon.url}`">
       <PokemonCard :pokemon="pokemon" @pokemon-details="updatePokemonDetails" />
     </div>
@@ -7,16 +12,16 @@
 </template>
 
 <script>
-import PokemonCard from './components/PokemonCard.vue'
+import PokemonCard from "./components/PokemonCard.vue";
 
 export default {
   components: {
-    PokemonCard
+    PokemonCard,
   },
   data() {
     return {
-      allPokemon: [] // This will be filled with Pokémon data
-    }
+      allPokemon: [], // This will be filled with Pokémon data
+    };
   },
   mounted() {
     this.fetchAllPokemon();
@@ -24,19 +29,21 @@ export default {
   methods: {
     async fetchAllPokemon() {
       try {
-        const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=10");
+        const response = await fetch(
+          "https://pokeapi.co/api/v2/pokemon?limit=10"
+        );
         const data = await response.json();
         this.allPokemon = data.results;
       } catch (error) {
-        console.error('Failed to fetch Pokémon:', error);
+        console.error("Failed to fetch Pokémon:", error);
       }
     },
     updatePokemonDetails(data) {
       // Update allPokemon with the details fetched
       this.allPokemon = data;
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style>
 /* Ensure this is all valid CSS */
