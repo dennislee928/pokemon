@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "emailjs-com": "^3.2.0",
-    "nuxt": "^3.13.2",
-    "vue": "^3.4.21",
+    "nuxt": "^3.14.0",
+    "vue": "^3.5.14",
     "vue-router": "^4.3.0"
   }
 }
